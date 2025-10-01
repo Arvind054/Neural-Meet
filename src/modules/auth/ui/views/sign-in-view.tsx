@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {  OctagonAlertIcon } from 'lucide-react'
 import Link from 'next/link'
+import {FaGithub, FaGoogle} from "react-icons/fa"
 
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from "@/components/ui/card"
@@ -30,12 +31,34 @@ export const SignInView = () => {
         const {error} = await authClient.signIn.email(
             {
                 email: data.email,
-                password: data.password
+                password: data.password,
+                callbackURL: "/"
             },
             {
                 onSuccess: ()=>{
                      setLoading(false);
-                    router.push("/");
+                     router.push("/");
+                },
+                onError: ({error})=>{
+                     setLoading(false);
+                    setError(error.message);
+                }
+            }
+        )
+       
+    };
+    const onSocial = async(provider: "github" | "google") =>{
+        setError(null);
+        setLoading(true);
+        const {error} = await authClient.signIn.social(
+            {
+                provider:provider,
+                 callbackURL: "/"
+            },
+            {
+                onSuccess: ()=>{
+                     setLoading(false);
+                  
                 },
                 onError: ({error})=>{
                      setLoading(false);
@@ -112,13 +135,15 @@ export const SignInView = () => {
                                 <div className='grid grid-cols-2 gap-4'>
                                      <Button variant="outline"
                                      type="button"
-                                     className='w-full' disabled={loading}>
-                                        Google
+                                     className='w-full' disabled={loading} 
+                                     onClick={()=>onSocial('google')}>
+                                       <FaGoogle/>
                                      </Button>
                                      <Button variant="outline"
                                      type="button"
-                                     className='w-full' disabled={loading}>
-                                        GitHub
+                                     className='w-full' disabled={loading}
+                                    onClick={()=>onSocial('github')}>
+                                       <FaGithub/>
                                      </Button>
                                 </div>
                                 <div className='text-center text-sm'>
