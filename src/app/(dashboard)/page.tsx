@@ -10,6 +10,8 @@ const page = async()=>{
   if(!session){
     redirect("/sign-in");
   }
-    return <HomeView></HomeView>
+    return <HomeView>
+      
+    </HomeView>
 }
 export default page;
