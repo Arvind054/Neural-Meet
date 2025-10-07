@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { PlusIcon, XCircleIcon } from "lucide-react"
 import { useState } from "react"
 import { DEFAULT_PAGE } from "@/constants"
-import { NewaMeetingDialog } from "./new-meeting-dialog"
+import { NewMeetingDialog } from "./new-meeting-dialog"
 import { MeetingSearchFilter } from "./Meetings-search-filter"
 import { StatusFilter } from "./status-filer"
 import { AgentIdFilter } from "./agent-id-filter"
@@ -27,7 +27,7 @@ export const MeetingsListHeader = ()=>{
 
     return (
         <>
-        <NewaMeetingDialog open={isDialogOpen} onOpenChange={setDialogOpen}/>
+        <NewMeetingDialog open={isDialogOpen} onOpenChange={setDialogOpen}/>
         <div className="py-4 px-4 md:px-8 flex flex-col gap-y-4">
            <div className="flex items-center justify-between">
                <h5 className="font-medium text-xl">My Meetings</h5>
