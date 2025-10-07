@@ -6,7 +6,7 @@ interface newMeetingDialogProps {
     onOpenChange: (open:boolean)=>void;
 };
 
-export const NewaMeetingDialog = ({open, onOpenChange}:newMeetingDialogProps)=>{
+export const NewMeetingDialog = ({open, onOpenChange}:newMeetingDialogProps)=>{
    const router = useRouter();
      return (
         <ResponsiveDialog title="New Meeting" description="Create a New Meeting" open={open} onOpenChange={onOpenChange}>
