@@ -4,7 +4,7 @@ import { inngest } from '@/ingest/client';
 import { StreamTranscriptItem } from '@/modules/meetings/types';
 import { eq, inArray } from 'drizzle-orm';
 import JSONL from 'jsonl-parse-stringify';
-import { createAgent, openai, TextMessage } from '@inngest/agent-kit'
+import { createAgent, openai, TextMessage } from '@inngest/agent-kit';
 
 const summarizer = createAgent({
   name: "summarizer",
