@@ -1,13 +1,19 @@
+import OpenAI from 'openai'
 import { and, eq, not } from 'drizzle-orm';
-import { CallEndedEvent, CallTranscriptionReadyEvent, CallSessionParticipantLeftEvent, CallRecordingReadyEvent, CallSessionStartedEvent } from '@stream-io/node-sdk';
+import {MessageNewEvent, CallEndedEvent, CallTranscriptionReadyEvent, CallSessionParticipantLeftEvent, CallRecordingReadyEvent, CallSessionStartedEvent } from '@stream-io/node-sdk';
 import { NextRequest, NextResponse } from 'next/server';
+import {ChatCompletionMessageParam} from "openai/resources/index.mjs"
 
 import { db } from '@/DB';
 import { agents, meetings } from '@/DB/schema';
 import { streamVideo } from '@/lib/stream-video'
 import { Signature } from 'lucide-react';
 import { inngest } from '@/ingest/client';
+import { generateAvatarUri } from '@/lib/avatar';
+import { streamChat } from '@/lib/stream-chat';
 
+
+const openaiClient = new OpenAI({apiKey: process.env.AI_API_KEY!});
 function verifySignatureWithSDK(body: string, signature: string): boolean {
     return streamVideo.verifyWebhook(body, signature);
 };
@@ -121,6 +127,89 @@ export async function POST(req: NextRequest) {
         })
         .where(eq(meetings.id, meetingId));
       
+    }else if(eventType === 'message.new'){
+        const event = payload as MessageNewEvent;
+        const userId = event.user?.id;
+        const channelId = event.channel_id;
+        const text = event.message?.text;
+
+        if(!userId || !channelId || !text){
+            return NextResponse.json(
+                {error: "Missing Required Fields"},
+                 {status: 400}
+                );
+        }
+
+        const [existingMeeting] = await db.select().from(meetings).where(and(eq(meetings.id, channelId), eq(meetings.status, "completed")));
+        if(!existingMeeting){
+            return NextResponse.json({error: "Meeting Not Found"}, {status: 404});
+        }
+
+        const [existingAgent] = await db.select().from(agents).where(eq(agents.id, existingMeeting.agentId));
+        if(!existingMeeting){
+            return NextResponse.json({error: "Agent Not Found"}, {status: 404});
+        };
+        if(userId !== existingAgent.id){
+            const instructions = `
+      You are an AI assistant helping the user revisit a recently completed meeting.
+      Below is a summary of the meeting, generated from the transcript:
+      
+      ${existingMeeting.summary}
+      
+      The following are your original instructions from the live meeting assistant. Please continue to follow these behavioral guidelines as you assist the user:
+      
+      ${existingAgent.instructions}
+      
+      The user may ask questions about the meeting, request clarifications, or ask for follow-up actions.
+      Always base your responses on the meeting summary above.
+      
+      You also have access to the recent conversation history between you and the user. Use the context of previous messages to provide relevant, coherent, and helpful responses. If the user's question refers to something discussed earlier, make sure to take that into account and maintain continuity in the conversation.
+      
+      If the summary does not contain enough information to answer a question, politely let the user know.
+      
+      Be concise, helpful, and focus on providing accurate information from the meeting and the ongoing conversation.
+      `;
+
+      const channel =streamChat.channel("messgae", channelId);
+      await channel.watch();
+
+    const prevMessages = channel.state.messages.slice(-5).filter((msg)=>msg.text && msg.text.trim() !== "").map<ChatCompletionMessageParam>((message)=>({
+        role : message.user?.id === existingAgent.id ? "assistant":"user",
+        content: message.text || "",
+    }));
+
+    const AiResponse = await openaiClient.chat.completions.create({
+        messages: [
+            {role: "system", content:instructions},
+             ...prevMessages,
+             {role: "user", content: text}
+        ],
+        model: "gpt-4o"
+    });
+
+    const AiResponseText = AiResponse.choices[0].message.content;
+    if(!AiResponseText){
+         return NextResponse.json({error: "No Response From AI"}, {status: 400});
+    }
+    const avatarUrl = generateAvatarUri({
+        seed:existingAgent.name,
+        variant: "botttsNeutral",
+    });
+    streamChat.upsertUser({
+          id: existingAgent.id,
+          name: existingAgent.name,
+          image:avatarUrl,
+    });
+
+    channel.sendMessage({
+        text: AiResponseText,
+        user:{
+            id: existingAgent.id,
+            name: existingAgent.name,
+            image:avatarUrl,
+        }
+    })
+        }
     }
     return NextResponse.json({ message: "ok" });
 }
