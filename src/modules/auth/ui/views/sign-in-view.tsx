@@ -14,7 +14,6 @@ import { useForm } from 'react-hook-form'
 import { authClient } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { TypeOf } from 'zod/v3'
 
 
 const formSchema = z.object({
@@ -28,7 +27,7 @@ export const SignInView = () => {
     const onSubmit = async(data: z.infer<typeof formSchema>) =>{
         setError(null);
         setLoading(true);
-        const {error} = await authClient.signIn.email(
+        await authClient.signIn.email(
             {
                 email: data.email,
                 password: data.password,
@@ -50,7 +49,7 @@ export const SignInView = () => {
     const onSocial = async(provider: "github" | "google") =>{
         setError(null);
         setLoading(true);
-        const {error} = await authClient.signIn.social(
+        await authClient.signIn.social(
             {
                 provider:provider,
                  callbackURL: "/"

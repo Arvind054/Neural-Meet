@@ -5,7 +5,6 @@ import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { MeetingIdViewHeader } from "../components/meeting-id-view-header";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { useConfirm } from "@/hooks/use-confirm";
 import { UpdateMeetingDialog } from "../components/update-meeting-dialog";
 import { useState } from "react";
@@ -58,7 +57,6 @@ export const MeetingIdView = ({meetingId}:Props)=>{
         {isActive && <ActiveState meetingId={meetingId}/>}
         {isUpcoming && <UpcomingState
           meetingId={meetingId} 
-          onCancelMeeting={()=>{}}
           isCancelled = {false}/>}
         {isCancelled && <CancelledState/>}
         {isCompleted && <CompletedState data = {data} />}

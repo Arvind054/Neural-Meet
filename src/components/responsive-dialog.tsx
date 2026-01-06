@@ -1,6 +1,6 @@
 "use client"
 import { Dialog, DialogContent, DialogHeader,DialogTitle, DialogDescription } from "./ui/dialog";
-import { Drawer,DrawerContent,DrawerHeader,DrawerTitle,DrawerDescription } from "./ui/drawer";
+import { Drawer,DrawerContent,DrawerTitle,DrawerDescription } from "./ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ResponsiveDialogProps{

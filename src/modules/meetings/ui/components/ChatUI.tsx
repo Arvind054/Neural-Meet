@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import type {Channel as StreamChannel} from 'stream-chat';
 import { useMutation } from "@tanstack/react-query";
 import {useCreateChatClient, Chat, Channel, MessageInput, MessageList,Thread, Window} from 'stream-chat-react';
-import { LoadingState } from "@/components/loading-state";
 import { useTRPC } from "@/trpc/client";
 
 import 'stream-chat-react/dist/css/v2/index.css'
-import { trpc } from "@/trpc/server";
 
 type Props = {
     meetingId: string,
@@ -18,7 +16,7 @@ type Props = {
 
 
 export const ChatUI = ({meetingId, meetingName, userId, userName, userImage}: Props)=>{
-    const trps = useTRPC();
+    const trpc = useTRPC();
     const {mutateAsync: generateToken}= useMutation(trpc.meetings.generateChatToken.mutationOptions());
     const [channel, setChannel] = useState<StreamChannel>();
 
@@ -41,6 +39,13 @@ export const ChatUI = ({meetingId, meetingName, userId, userName, userImage}: Pr
 
     }, [client, meetingId, meetingName,userId]);
 
+    if (!client) {
+        return (
+            <div className="bg-white rounded-lg overflow-hidden p-4 text-center text-muted-foreground">
+                Loading chat...
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white rounded-lg overflow-hidden">

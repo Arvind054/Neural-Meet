@@ -22,4 +22,8 @@ export const auth = betterAuth({
             ...schema
         }
     }),
+    trustedOrigins: [
+    "http://localhost:3000",
+    "https://timberless-merri-tiddly.ngrok-free.dev"
+  ],
 });

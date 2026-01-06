@@ -7,7 +7,6 @@ import {ChatCompletionMessageParam} from "openai/resources/index.mjs"
 import { db } from '@/DB';
 import { agents, meetings } from '@/DB/schema';
 import { streamVideo } from '@/lib/stream-video'
-import { Signature } from 'lucide-react';
 import { inngest } from '@/ingest/client';
 import { generateAvatarUri } from '@/lib/avatar';
 import { streamChat } from '@/lib/stream-chat';

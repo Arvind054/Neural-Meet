@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MeetingGetOne } from "../types"
-import {ScrollArea, ScrollBar} from '@/components/ui/scroll-area';
+import {ScrollArea} from '@/components/ui/scroll-area';
 import { BookOpenTextIcon, SparklesIcon, FileTextIcon,FileVideoIcon,ClockFadingIcon } from "lucide-react";
 import Markdown from 'react-markdown';
 import Link from "next/link";

@@ -4,7 +4,6 @@ import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useMeetingsFilter } from "../../hooks/use-meetings-filters";
-import { Divide } from "lucide-react";
 
 
 export const AgentIdFilter = ()=>{

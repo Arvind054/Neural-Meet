@@ -5,10 +5,8 @@ import { Badge } from "@/components/ui/badge"
 import { MeetingGetMany } from "@/modules/meetings/types"
 import {format} from 'date-fns'
 
-import { CircleCheckIcon,CircleXIcon,ClockArrowDownIcon,ClockFadingIcon,CornerDownRightIcon, VideoIcon, LoaderIcon, ClockArrowUpIcon} from "lucide-react"
+import { CircleCheckIcon,CircleXIcon,ClockFadingIcon,CornerDownRightIcon, LoaderIcon, ClockArrowUpIcon} from "lucide-react"
 import { cn, formatDuration } from "@/lib/utils"
-
-type Meeting = MeetingGetMany[number];
 
 
 const statusIconMap = {
